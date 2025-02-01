@@ -3,6 +3,7 @@
     "pages/SplashScreenPage",
     "pages/HomePage",
     "pages/SettingsPage",
-    "pages/HeaderView"
+    "pages/HeaderView",
+    "pages/CameraPage"
   ]
 }

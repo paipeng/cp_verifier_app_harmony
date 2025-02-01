@@ -2,6 +2,7 @@ import { HeaderView } from './HeaderView';
 import bundleManager from '@ohos.bundle.bundleManager';
 import hilog from '@ohos.hilog';
 import { HomeButtonView } from './HomeButtonView';
+import { router } from '@kit.ArkUI'
 
 @Entry
 @Component
@@ -45,7 +46,9 @@ struct HomePage {
                 HomeButtonView()
                   .onClick((event) => {
                     hilog.info(0x0000, 'HomePage', 'HomeButtonView clicked: %{public}', JSON.stringify(event));
-
+                    router.replaceUrl({
+                      url: 'pages/CameraPage'
+                    })
                   })
                 //Text(`${index}`)
               }.backgroundColor(color)
