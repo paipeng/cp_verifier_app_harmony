@@ -13,9 +13,14 @@ class CameraService {
   private photoOutput: camera.PhotoOutput | undefined = undefined;
   private session: camera.PhotoSession | camera.VideoSession | undefined = undefined;
 
+  private imageReceiver: image.ImageReceiver | undefined = undefined;
+  private imageReceiverSurfaceId: string = '';
+
   // 初始化相机
-  async initCamera(context: Context, surfaceId: string): Promise<void> {
-    console.info(`initCamera surfaceId: ${surfaceId}`);
+  async initCamera(context: Context, surfaceId: string, previewSize: image.Size): Promise<void> {
+    console.info(`initCamera surfaceId: ${surfaceId} ${previewSize}`);
+    this.imageWidth = previewSize.width
+    this.imageHeight = previewSize.height
     try {
       await this.releaseCamera();
       // 获取相机管理器实例
@@ -76,6 +81,8 @@ class CameraService {
       this.session.addOutput(this.photoOutput);
       await this.session.commitConfig();
       await this.session.start();
+
+      this.initImageReceiver()
     } catch (error) {
       let err = error as BusinessError;
       console.error(`initCamera fail: ${JSON.stringify(err)}`);
@@ -101,6 +108,75 @@ class CameraService {
       this.cameraInput = undefined;
     }
     console.info('releaseCamera success');
+  }
+
+  async initImageReceiver(): Promise<void> {
+    if (!this.imageReceiver) {
+      // 创建ImageReceiver
+      let size: image.Size = { width: this.imageWidth, height: this.imageHeight };
+      this.imageReceiver = image.createImageReceiver(size, image.ImageFormat.JPEG, 8);
+      // 获取取第一路流SurfaceId
+      this.imageReceiverSurfaceId = await this.imageReceiver.getReceivingSurfaceId();
+      console.info(`initImageReceiver imageReceiverSurfaceId:${this.imageReceiverSurfaceId}`);
+      // 注册监听处理预览流每帧图像数据
+      this.onImageArrival(this.imageReceiver);
+    }
+  }
+
+  /**
+   * 注册ImageReceiver图像监听
+   * @param receiver
+   */
+  onImageArrival(receiver: image.ImageReceiver): void {
+    // 注册imageArrival监听
+    receiver.on('imageArrival', () => {
+      console.info('image arrival');
+      // 获取图像
+      receiver.readNextImage((err: BusinessError, nextImage: image.Image) => {
+        if (err || nextImage === undefined) {
+          console.error('readNextImage failed');
+          return;
+        }
+        // 解析图像内容
+        nextImage.getComponent(image.ComponentType.JPEG, async (err: BusinessError, imgComponent: image.Component) => {
+          if (err || imgComponent === undefined) {
+            console.error('getComponent failed');
+          }
+          if (imgComponent.byteBuffer) {
+            // 请参考步骤7解析buffer数据，本示例以方式一为例
+            let width = nextImage.size.width; // 获取图片的宽
+            let height = nextImage.size.height; // 获取图片的高
+            let stride = imgComponent.rowStride; // 获取图片的stride
+            console.debug(`getComponent with width:${width} height:${height} stride:${stride}`);
+            // stride与width一致
+            if (stride == width) {
+              let pixelMap = await image.createPixelMap(imgComponent.byteBuffer, {
+                size: { height: height, width: width },
+                srcPixelFormat: 8,
+              })
+            } else {
+              // stride与width不一致
+              const dstBufferSize = width * height * 1.5 // 以NV21为例（YUV_420_SP格式的图片）YUV_420_SP内存计算公式：长x宽+(长x宽)/2
+              const dstArr = new Uint8Array(dstBufferSize)
+              for (let j = 0; j < height * 1.5; j++) {
+                const srcBuf = new Uint8Array(imgComponent.byteBuffer, j * stride, width)
+                dstArr.set(srcBuf, j * width)
+              }
+              let pixelMap = await image.createPixelMap(dstArr.buffer, {
+                size: { height: height, width: width },
+                srcPixelFormat: 8,
+              })
+            }
+          } else {
+            console.error('byteBuffer is null');
+          }
+          // 确保当前buffer没有在使用的情况下，可进行资源释放
+          // 如果对buffer进行异步操作，需要在异步操作结束后再释放该资源（nextImage.release()）
+          nextImage.release();
+          console.info('image process done');
+        })
+      })
+    })
   }
 }
 
@@ -815,3 +891,4 @@ function onPhotoOutputError(photoOutput: camera.PhotoOutput): void {
     console.error(`Photo output error code: ${error.code}`);
   });
 }
+

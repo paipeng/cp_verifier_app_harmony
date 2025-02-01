@@ -13,8 +13,8 @@ export struct CameraPage {
   private mXComponentController: XComponentController = new XComponentController();
   private surfaceId: string = '';
   private displayClass: display.Display | undefined
-  @State imageWidth: number = 3840;
-  @State imageHeight: number = 2160;
+  @State imageWidth: number = 1920;//3840;
+  @State imageHeight: number = 1080;//2160;
   // 创建ThreadWorker对象获取worker实例
   private workerInstance: worker.ThreadWorker = new worker.ThreadWorker('entry/ets/workers/CameraWorker.ets');
 
@@ -27,6 +27,10 @@ export struct CameraPage {
         type: 'initCamera',
         context: getContext(this),
         surfaceId: this.surfaceId,
+        previewSize: {
+          width: this.imageWidth,
+          height: this.imageHeight
+        }
       })
     }
   }
@@ -62,8 +66,8 @@ export struct CameraPage {
             // 初始化XComponent获取预览流surfaceId
             this.surfaceId = this.mXComponentController.getXComponentSurfaceId();
             let surfaceRect: SurfaceRect = {
-              surfaceWidth: this.imageHeight*1.2,
-              surfaceHeight: this.imageWidth*1.2
+              surfaceWidth: this.imageHeight,
+              surfaceHeight: this.imageWidth
             };
             this.mXComponentController.setXComponentSurfaceRect(surfaceRect);
             console.info(`onLoad surfaceId: ${this.surfaceId}`);
@@ -76,6 +80,10 @@ export struct CameraPage {
               type: 'initCamera',
               context: getContext(this), // 将宿主线程的context传给worker线程使用
               surfaceId: this.surfaceId, // 将surfaceId传给worker线程使用
+              previewSize: {
+                width: this.imageWidth,
+                height: this.imageHeight
+              }
             })
           })// The width and height of the surface are opposite to those of the XComponent.
           //.width(px2vp(this.imageHeight))
