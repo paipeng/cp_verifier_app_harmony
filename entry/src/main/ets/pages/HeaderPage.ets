@@ -26,7 +26,7 @@ export struct HeaderPage {
         Image($r('app.media.icon'))
           .objectFit(ImageFit.Contain)
             //.backgroundColor(Color.Yellow)
-          .height('30%')
+          .height('200')
         Text($r('app.string.app_name'))
           .id('HelloWorld')
           .fontSize(this.fontSize)
@@ -43,7 +43,7 @@ export struct HeaderPage {
       .animation({
         duration: 2000,
         curve: Curve.Ease,
-        iterations: -1,
+        iterations: 1,
         playMode: PlayMode.Normal
       })
 
