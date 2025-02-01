@@ -3,6 +3,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import hilog from '@ohos.hilog';
 import { abilityAccessCtrl, bundleManager, Permissions } from '@kit.AbilityKit';
 import { worker } from '@kit.ArkTS';
+import { display } from '@kit.ArkUI';
 
 
 @Entry
@@ -11,6 +12,7 @@ export struct CameraPage {
   private TAG: string = CameraPage.name
   private mXComponentController: XComponentController = new XComponentController();
   private surfaceId: string = '';
+  private displayClass: display.Display | undefined
   @State imageWidth: number = 1920;
   @State imageHeight: number = 1080;
   // 创建ThreadWorker对象获取worker实例
@@ -34,6 +36,17 @@ export struct CameraPage {
     this.workerInstance.postMessage({
       type: 'releaseCamera',
     })
+  }
+
+  aboutToAppear(): void {
+    //let displayClass = null
+    try {
+      this.displayClass = display.getDefaultDisplaySync()
+      console.info(' screen width: ' + this.displayClass.width)
+      console.info(' screen height: ' + this.displayClass.height)
+    } catch (exception) {
+
+    }
   }
 
   build() {
@@ -67,8 +80,8 @@ export struct CameraPage {
           })// The width and height of the surface are opposite to those of the XComponent.
           //.width(px2vp(this.imageHeight))
           //.height(px2vp(this.imageWidth))
-          .width('100%')
-          .height('100%')
+          .width(this.displayClass?.width)
+          .height(this.displayClass?.width! * this.imageHeight / this.imageWidth)
 
       }.justifyContent(FlexAlign.Center)
       .height('100%')
