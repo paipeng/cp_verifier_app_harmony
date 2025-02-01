@@ -25,6 +25,11 @@ class CameraService {
         return;
       }
       this.cameras = this.cameraManager.getSupportedCameras();
+      for (const cam of this.cameras) {
+        // 0: back camera
+        // 1: front camera
+        console.debug('cameraId: ' + cam.cameraId + ' position: ' + cam.cameraPosition.valueOf() + ' type: ' + cam.cameraType.valueOf() + ' orientation: ' + cam.cameraOrientation + ' connectionType: ' + cam.connectionType.valueOf())
+      }
 
       // 创建cameraInput输出对象
       this.cameraInput = this.cameraManager.createCameraInput(this.cameras[0]);
