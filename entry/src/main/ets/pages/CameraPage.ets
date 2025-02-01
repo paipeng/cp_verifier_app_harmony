@@ -49,8 +49,8 @@ export struct CameraPage {
             // 初始化XComponent获取预览流surfaceId
             this.surfaceId = this.mXComponentController.getXComponentSurfaceId();
             let surfaceRect: SurfaceRect = {
-              surfaceWidth: this.imageHeight,
-              surfaceHeight: this.imageWidth
+              surfaceWidth: this.imageHeight*1.2,
+              surfaceHeight: this.imageWidth*1.2
             };
             this.mXComponentController.setXComponentSurfaceRect(surfaceRect);
             console.info(`onLoad surfaceId: ${this.surfaceId}`);
@@ -65,11 +65,13 @@ export struct CameraPage {
               surfaceId: this.surfaceId, // 将surfaceId传给worker线程使用
             })
           })// The width and height of the surface are opposite to those of the XComponent.
-          .width(px2vp(this.imageHeight))
-          .height(px2vp(this.imageWidth))
+          //.width(px2vp(this.imageHeight))
+          //.height(px2vp(this.imageWidth))
+          .width('100%')
+          .height('100%')
 
       }.justifyContent(FlexAlign.Center)
-      .height('90%')
+      .height('100%')
 
       Text('WorkerDemo')
         .fontSize(36)
@@ -77,6 +79,7 @@ export struct CameraPage {
     .justifyContent(FlexAlign.End)
     .height('100%')
     .width('100%')
+    .backgroundColor(0xFF00FF)
   }
 
   async checkPermissionGrant(permission: Permissions): Promise<abilityAccessCtrl.GrantStatus> {
@@ -86,7 +89,8 @@ export struct CameraPage {
     // 获取应用程序的accessTokenID
     let tokenId: number = 0;
     try {
-      let bundleInfo: bundleManager.BundleInfo = await bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION);
+      let bundleInfo: bundleManager.BundleInfo =
+        await bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION);
       let appInfo: bundleManager.ApplicationInfo = bundleInfo.appInfo;
       tokenId = appInfo.accessTokenId;
     } catch (error) {
@@ -106,8 +110,10 @@ export struct CameraPage {
   }
 
   async checkPermissions(): Promise<void> {
-    let grantStatus1: boolean = await this.checkPermissionGrant('ohos.permission.CAMERA') === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;// 获取精确定位权限状态
-    let grantStatus2: boolean = await this.checkPermissionGrant('ohos.permission.MEDIA_LOCATION') === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;// 获取模糊定位权限状态
+    let grantStatus1: boolean = await this.checkPermissionGrant('ohos.permission.CAMERA') ===
+    abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED; // 获取精确定位权限状态
+    let grantStatus2: boolean = await this.checkPermissionGrant('ohos.permission.MEDIA_LOCATION') ===
+    abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED; // 获取模糊定位权限状态
     hilog.info(0x0000, this.TAG, 'grantStatus1: ' + grantStatus1);
     hilog.info(0x0000, this.TAG, 'grantStatus2: ' + grantStatus2);
     if (grantStatus2 && !grantStatus1) {
@@ -118,5 +124,4 @@ export struct CameraPage {
       // 已经授权，可以继续访问目标操作
     }
   }
-
 }
