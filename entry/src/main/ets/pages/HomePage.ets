@@ -1,4 +1,4 @@
-import { HeaderPage } from './HeaderPage';
+import { HeaderView } from './HeaderView';
 import bundleManager from '@ohos.bundle.bundleManager';
 import hilog from '@ohos.hilog';
 
@@ -36,7 +36,7 @@ struct HomePage {
   build() {
     RelativeContainer(){
       Column() {
-        HeaderPage()
+        HeaderView()
 
         Column() {
           Grid() {

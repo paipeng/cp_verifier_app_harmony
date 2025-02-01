@@ -3,7 +3,7 @@ import { display } from '@kit.ArkUI';
 
 @Entry
 @Component
-export struct HeaderPage {
+export struct HeaderView {
   @State widthA: number = 300
   @State heightA: string = '10%'
   @State fontSize: number = 26

@@ -3,6 +3,6 @@
     "pages/SplashScreenPage",
     "pages/HomePage",
     "pages/SettingsPage",
-    "pages/HeaderPage"
+    "pages/HeaderView"
   ]
 }
