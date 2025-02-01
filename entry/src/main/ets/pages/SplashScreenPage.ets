@@ -18,7 +18,11 @@ struct Index {
       this.fontSize = 50
       this.opacityA = 1.0
     })
-
+    setTimeout(() => {
+      router.replaceUrl({
+        url: 'pages/HomePage'
+      })
+    }, 2000); // 延迟2000毫秒（2秒）后执行
   }
   build() {
     Column() {
@@ -46,7 +50,7 @@ struct Index {
       .animation({
         duration: 2000,
         curve: Curve.Ease,
-        iterations: -1,
+        iterations: 1,
         playMode: PlayMode.Normal
       })
 
@@ -55,20 +59,7 @@ struct Index {
     .width('100%')
     .backgroundColor($r('app.color.SecondaryColor'))
     .onClick(() => {
-      /*
-      featureAbility.startAbility({
-        want: {
-          bundleName: 'com.paipeng.verifier',
-          abilityName: 'com.paipeng.verifier.HomePage'
-        }
-      }).then((data) => {
-        console.info("startAbility dta: ${JSON.stringify(data)}")
-      })
-      * */
 
-      router.replaceUrl({
-        url: 'pages/HomePage'
-      })
 
     })
   }
