@@ -66,8 +66,8 @@ export struct CameraPage {
             // 初始化XComponent获取预览流surfaceId
             this.surfaceId = this.mXComponentController.getXComponentSurfaceId();
             let surfaceRect: SurfaceRect = {
-              surfaceWidth: this.imageHeight,
-              surfaceHeight: this.imageWidth
+              surfaceWidth: this.imageHeight * 1.25,
+              surfaceHeight: this.imageWidth * 1.25
             };
             this.mXComponentController.setXComponentSurfaceRect(surfaceRect);
             console.info(`onLoad surfaceId: ${this.surfaceId}`);
