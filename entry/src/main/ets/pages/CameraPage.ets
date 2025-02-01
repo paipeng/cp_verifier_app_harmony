@@ -13,8 +13,8 @@ export struct CameraPage {
   private mXComponentController: XComponentController = new XComponentController();
   private surfaceId: string = '';
   private displayClass: display.Display | undefined
-  @State imageWidth: number = 1920;
-  @State imageHeight: number = 1080;
+  @State imageWidth: number = 3840;
+  @State imageHeight: number = 2160;
   // 创建ThreadWorker对象获取worker实例
   private workerInstance: worker.ThreadWorker = new worker.ThreadWorker('entry/ets/workers/CameraWorker.ets');
 
