@@ -1,6 +1,7 @@
 import { HeaderView } from './HeaderView';
 import bundleManager from '@ohos.bundle.bundleManager';
 import hilog from '@ohos.hilog';
+import { HomeButtonView } from './HomeButtonView';
 
 @Entry
 @Component
@@ -30,19 +31,23 @@ struct HomePage {
     } catch (err) {
       hilog.error(0x0000, 'testTag', 'getBundleInfoForSelf failed: %{public}s', err.message);
     }
-
-
   }
   build() {
     RelativeContainer(){
       Column() {
         HeaderView()
+          .height('30%')
 
         Column() {
           Grid() {
             ForEach(this.bgColors, (color: ResourceColor, index?: number | undefined) => {
               GridItem() {
-                Text(`${index}`)
+                HomeButtonView()
+                  .onClick((event) => {
+                    hilog.info(0x0000, 'HomePage', 'HomeButtonView clicked: %{public}', JSON.stringify(event));
+
+                  })
+                //Text(`${index}`)
               }.backgroundColor(color)
             })
           }
@@ -50,7 +55,7 @@ struct HomePage {
         }.height('60%')
 
       }
-      .height('30%')
+
       .width('100%')
 
       Text(this.versionString)
