@@ -1,9 +1,9 @@
 {
   "name": "entry",
   "version": "1.0.0",
-  "description": "Please describe the basic information.",
+  "description": "Verifier app.",
   "main": "",
-  "author": "",
+  "author": "Pai Peng",
   "license": "",
   "dependencies": {}
 }
