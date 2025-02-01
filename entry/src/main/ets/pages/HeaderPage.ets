@@ -1,21 +1,33 @@
+
+import { display } from '@kit.ArkUI';
+
 @Entry
 @Component
 export struct HeaderPage {
   @State widthA: number = 300
-  @State heightA: string = '10%'
+  @State heightA: number = 100
   @State fontSize: number = 26
   @State opacityA: number = 0.1
   aboutToAppear(): void {
     console.debug('HeaderPage aboutToAppear')
-    animateTo({
-      duration: 1000
-    }, () => {
-      this.widthA = 650
-      this.heightA = '100%'
-      this.fontSize = 50
-      this.opacityA = 1.0
-    })
 
+    setTimeout(() => {
+      console.debug('timeout')
+      animateTo({
+        duration: 3000
+      }, () => {
+        console.debug('animateTo executed')
+        let screenWidth = display.getDefaultDisplaySync().width;
+        let screenHeight = display.getDefaultDisplaySync().height;
+        console.debug(`screen size: ${screenWidth} - ${screenHeight}`)
+        this.widthA = screenWidth
+        this.heightA = screenHeight * 0.33
+        this.fontSize = 50
+        this.opacityA = 1.0
+      })
+
+
+    }, 200);
   }
   build() {
     Column() {
@@ -48,7 +60,7 @@ export struct HeaderPage {
       })
 
     }
-    .height('100%')
+    .height(this.heightA)
     .width('100%')
     .backgroundColor($r('app.color.SecondaryColor'))
   }
