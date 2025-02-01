@@ -1,3 +1,6 @@
+//import featureAbility from '@ohos.ability.featureAbility';
+import { router } from '@kit.ArkUI'
+
 @Entry
 @Component
 struct Index {
@@ -51,5 +54,21 @@ struct Index {
     .height('100%')
     .width('100%')
     .backgroundColor($r('app.color.SecondaryColor'))
+    .onClick(() => {
+      /*
+      featureAbility.startAbility({
+        want: {
+          bundleName: 'com.paipeng.verifier',
+          abilityName: 'com.paipeng.verifier.HomePage'
+        }
+      }).then((data) => {
+        console.info("startAbility dta: ${JSON.stringify(data)}")
+      })
+      * */
+      router.push({
+        url: 'pages/HomePage'
+      })
+
+    })
   }
 }
