@@ -3,6 +3,8 @@ import bundleManager from '@ohos.bundle.bundleManager';
 import hilog from '@ohos.hilog';
 import { HomeButtonView } from './HomeButtonView';
 import { router } from '@kit.ArkUI'
+import { camera, cameraPicker as picker } from '@kit.CameraKit'
+import { fileIo, fileUri } from '@kit.CoreFileKit'
 
 @Entry
 @Component
@@ -11,6 +13,8 @@ struct HomePage {
   @State bgColors: ResourceColor[] =
     ['rgb(213,213,213)', 'rgb(150,150,150)', 'rgb(0,74,175)', 'rgb(39,135,217)', 'rgb(61,157,180)', 'rgb(23,169,141)',
       'rgb(255,192,0)', 'rgb(170,10,33)'];
+  @State imgSrc: string = '';
+  @State videoSrc: string = '';
 
   onPageShow(): void {
     console.debug('HomePage onPageShow')
@@ -40,6 +44,35 @@ struct HomePage {
           .height('30%')
 
         Column() {
+          Image(this.imgSrc).width(200).height(200).backgroundColor(Color.Black).margin(5);
+          Video({ src: this.videoSrc}).width(200).height(200).autoPlay(true);
+          Button("Test Picker Photo&Video")
+            .fontSize(20)
+            .fontWeight(FontWeight.Bold)
+            .onClick(async () => {
+              let pathDir = getContext().filesDir;
+              let fileName = `${new Date().getTime()}`
+              let filePath = pathDir + `/${fileName}.tmp`
+              fileIo.createRandomAccessFileSync(filePath, fileIo.OpenMode.CREATE);
+
+              let uri = fileUri.getUriFromPath(filePath);
+              let pickerProfile: picker.PickerProfile = {
+                cameraPosition: camera.CameraPosition.CAMERA_POSITION_BACK,
+                saveUri: uri
+              };
+              let result: picker.PickerResult =
+                await picker.pick(getContext(), [picker.PickerMediaType.PHOTO, picker.PickerMediaType.VIDEO],
+                  pickerProfile);
+              console.info(`picker resultCode: ${result.resultCode},resultUri: ${result.resultUri},mediaType: ${result.mediaType}`);
+              if (result.resultCode == 0) {
+                if (result.mediaType === picker.PickerMediaType.PHOTO) {
+                  this.imgSrc = result.resultUri;
+                } else {
+                  this.videoSrc = result.resultUri;
+                }
+              }
+            }).margin(5);
+
           Grid() {
             ForEach(this.bgColors, (color: ResourceColor, index?: number | undefined) => {
               GridItem() {
