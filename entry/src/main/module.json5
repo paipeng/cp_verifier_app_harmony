@@ -45,6 +45,28 @@
           }
         ],
       }
+    ],
+    "requestPermissions":[
+      {
+        "name" : "ohos.permission.CAMERA",
+        "reason": "$string:camera_permission",
+        "usedScene": {
+          "abilities": [
+            "FormAbility"
+          ],
+          "when":"inuse"
+        }
+      },
+      {
+        "name" : "ohos.permission.MEDIA_LOCATION",
+        "reason": "$string:location_permission",
+        "usedScene": {
+          "abilities": [
+            "FormAbility"
+          ],
+          "when":"always"
+        }
+      }
     ]
   }
 }

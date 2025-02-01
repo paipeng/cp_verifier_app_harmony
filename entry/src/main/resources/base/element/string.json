@@ -19,6 +19,14 @@
     {
       "name": "version",
       "value": "Version"
+    },
+    {
+      "name": "camera_permission",
+      "value": "Version"
+    },
+    {
+      "name": "location_permission",
+      "value": "Version"
     }
   ]
 }
