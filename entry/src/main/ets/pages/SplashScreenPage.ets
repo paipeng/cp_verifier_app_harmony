@@ -65,7 +65,8 @@ struct Index {
         console.info("startAbility dta: ${JSON.stringify(data)}")
       })
       * */
-      router.push({
+
+      router.replaceUrl({
         url: 'pages/HomePage'
       })
 
