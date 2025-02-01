@@ -5,7 +5,8 @@ export struct HeaderPage {
   @State heightA: string = '10%'
   @State fontSize: number = 26
   @State opacityA: number = 0.1
-  onPageShow(): void {
+  aboutToAppear(): void {
+    console.debug('HeaderPage aboutToAppear')
     animateTo({
       duration: 1000
     }, () => {
