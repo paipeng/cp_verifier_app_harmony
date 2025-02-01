@@ -19,7 +19,7 @@ class CameraService {
     try {
       await this.releaseCamera();
       // 获取相机管理器实例
-      this.cameraManager = camera.getCameraManager(context);
+      this.cameraManager = getCameraManager(context)//camera.getCameraManager(context);
       if (this.cameraManager === undefined) {
         console.error('cameraManager is undefined');
         return;
