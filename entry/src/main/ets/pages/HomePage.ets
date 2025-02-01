@@ -4,12 +4,16 @@ import { HeaderPage } from './HeaderPage';
 @Component
 struct HomePage {
   @State message: string = 'Hello World';
+  onPageShow(): void {
+    console.debug('HomePage onPageShow')
 
+
+  }
   build() {
     Column() {
       HeaderPage()
     }
-    .height('100%')
+    .height('30%')
     .width('100%')
   }
 }
