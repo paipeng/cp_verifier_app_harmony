@@ -1,6 +1,8 @@
 {
   "src": [
     "pages/SplashScreenPage",
-    "pages/HomePage"
+    "pages/HomePage",
+    "pages/SettingsPage",
+    "pages/HeaderPage"
   ]
 }
