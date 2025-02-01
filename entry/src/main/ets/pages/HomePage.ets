@@ -5,8 +5,11 @@ import hilog from '@ohos.hilog';
 @Entry
 @Component
 struct HomePage {
-  @State message: string = 'Hello World';
   @State versionString: string = ''
+  @State bgColors: ResourceColor[] =
+    ['rgb(213,213,213)', 'rgb(150,150,150)', 'rgb(0,74,175)', 'rgb(39,135,217)', 'rgb(61,157,180)', 'rgb(23,169,141)',
+      'rgb(255,192,0)', 'rgb(170,10,33)'];
+
   onPageShow(): void {
     console.debug('HomePage onPageShow')
 
@@ -31,11 +34,37 @@ struct HomePage {
 
   }
   build() {
-    Column() {
-      HeaderPage()
+    RelativeContainer(){
+      Column() {
+        HeaderPage()
+
+        Column() {
+          Grid() {
+            ForEach(this.bgColors, (color: ResourceColor, index?: number | undefined) => {
+              GridItem() {
+                Text(`${index}`)
+              }.backgroundColor(color)
+            })
+          }
+          .columnsTemplate('1fr 1fr')
+        }.height('60%')
+
+      }
+      .height('30%')
+      .width('100%')
+
+      Text(this.versionString)
+        .padding({
+          bottom: 20
+        })
+        .alignRules({
+          bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+          middle: { anchor: '__container__', align: HorizontalAlign.Center }
+        })
     }
-    .height('30%')
-    .width('100%')
+
+  }
+
   resourceToString(resource: Resource): string {
     return getContext(this).resourceManager.getStringSync(resource)
   }
