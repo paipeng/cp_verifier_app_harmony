@@ -5,25 +5,27 @@ import { display } from '@kit.ArkUI';
 @Component
 export struct HeaderPage {
   @State widthA: number = 300
-  @State heightA: number = 100
+  @State heightA: string = '10%'
   @State fontSize: number = 26
   @State opacityA: number = 0.1
+  @State imageHeight: string = '10%'
   aboutToAppear(): void {
     console.debug('HeaderPage aboutToAppear')
 
     setTimeout(() => {
       console.debug('timeout')
       animateTo({
-        duration: 3000
+        duration: 2000
       }, () => {
         console.debug('animateTo executed')
         let screenWidth = display.getDefaultDisplaySync().width;
         let screenHeight = display.getDefaultDisplaySync().height;
         console.debug(`screen size: ${screenWidth} - ${screenHeight}`)
         this.widthA = screenWidth
-        this.heightA = screenHeight * 0.33
-        this.fontSize = 50
+        this.heightA = '100%'
+        this.fontSize = 40
         this.opacityA = 1.0
+        this.imageHeight = '80%'
       })
 
 
@@ -31,14 +33,16 @@ export struct HeaderPage {
   }
   build() {
     Column() {
-      Column()
-        .backgroundColor(Color.Gray)
-        .height('33%')
       Column() {
-        Image($r('app.media.icon'))
+        Image($r('app.media.icon3'))
           .objectFit(ImageFit.Contain)
             //.backgroundColor(Color.Yellow)
-          .height('200')
+          .height(this.imageHeight)
+          .fillColor($r('app.color.PrimaryColor'))
+          .padding({
+            top: 50
+          })
+
         Text($r('app.string.app_name'))
           .id('HelloWorld')
           .fontSize(this.fontSize)

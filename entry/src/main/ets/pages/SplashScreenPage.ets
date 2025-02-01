@@ -9,31 +9,48 @@ struct Index {
   @State heightA: string = '10%'
   @State fontSize: number = 26
   @State opacityA: number = 0.1
+  @State imageHeight: string = '10%'
   onPageShow(): void {
+    console.debug('SplashScreenPage onPageShow')
+
     animateTo({
-      duration: 1000
+      duration: 500
     }, () => {
+      console.debug('animateTo executed')
       this.widthA = 650
       this.heightA = '100%'
       this.fontSize = 50
       this.opacityA = 1.0
     })
+
     setTimeout(() => {
-      router.replaceUrl({
-        url: 'pages/HomePage'
+
+      animateTo({
+        duration: 2000
+      }, () => {
+        console.debug('animateTo executed')
+        this.imageHeight = '30%'
       })
-    }, 2000); // 延迟2000毫秒（2秒）后执行
+
+      setTimeout(() => {
+
+        router.replaceUrl({
+          url: 'pages/HomePage'
+        })
+      }, 2000); // 延迟2000毫秒（2秒）后执行
+    }, 500); // 延迟2000毫秒（2秒）后执行
+
   }
   build() {
     Column() {
       Column()
-        .backgroundColor(Color.Gray)
+        //.backgroundColor(Color.Gray)
         .height('33%')
       Column() {
-      Image($r('app.media.icon'))
+      Image($r('app.media.icon3'))
         .objectFit(ImageFit.Contain)
         //.backgroundColor(Color.Yellow)
-        .height('30%')
+        .height(this.imageHeight)
       Text($r('app.string.app_name'))
         .id('HelloWorld')
         .fontSize(this.fontSize)
