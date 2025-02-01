@@ -48,7 +48,7 @@ class CameraService {
         }
       };
       // 创建预览流输出
-      this.previewOutput = this.cameraManager.createPreviewOutput(previewProfile, surfaceId);
+      this.previewOutput = getPreviewOutput2(this.cameraManager, previewProfile, surfaceId)//this.cameraManager.createPreviewOutput(previewProfile, surfaceId);
       if (this.previewOutput === undefined) {
         console.error('Failed to create the preview stream.');
         return;
@@ -574,6 +574,19 @@ function getPreviewOutput(cameraManager: camera.CameraManager, cameraOutputCapab
   let previewOutput: camera.PreviewOutput | undefined = undefined;
   try {
     previewOutput = cameraManager.createPreviewOutput(previewProfilesArray[0], surfaceId);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error("Failed to create the PreviewOutput instance. error code: " + err.code);
+  }
+  return previewOutput;
+}
+
+
+function getPreviewOutput2(cameraManager: camera.CameraManager, cameraProfile: camera.Profile,
+  surfaceId: string): camera.PreviewOutput | undefined {
+  let previewOutput: camera.PreviewOutput | undefined = undefined;
+  try {
+    previewOutput = cameraManager.createPreviewOutput(cameraProfile, surfaceId);
   } catch (error) {
     let err = error as BusinessError;
     console.error("Failed to create the PreviewOutput instance. error code: " + err.code);
