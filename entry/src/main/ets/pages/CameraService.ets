@@ -36,6 +36,9 @@ class CameraService {
         console.debug('cameraId: ' + cam.cameraId + ' position: ' + cam.cameraPosition.valueOf() + ' type: ' + cam.cameraType.valueOf() + ' orientation: ' + cam.cameraOrientation + ' connectionType: ' + cam.connectionType.valueOf())
       }
 
+      // listen status
+      onCameraStatusChange(this.cameraManager)
+
       // 创建cameraInput输出对象
       this.cameraInput = this.cameraManager.createCameraInput(this.cameras[0]);
       if (this.cameraInput === undefined) {
