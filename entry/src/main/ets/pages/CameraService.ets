@@ -3,12 +3,15 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 import { image } from '@kit.ImageKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+import { fileIo as fs, ReadOptions } from '@kit.CoreFileKit';
 
 class CameraService {
   private static TAG: string = CameraService.name
 
   private imageWidth: number = 1920;
   private imageHeight: number = 1080;
+  private context: Context | undefined
   private cameraManager: camera.CameraManager | undefined = undefined;
   private cameras: Array<camera.CameraDevice> | Array<camera.CameraDevice> = [];
   private cameraInput: camera.CameraInput | undefined = undefined;
@@ -22,6 +25,7 @@ class CameraService {
   // 初始化相机
   async initCamera(context: Context, surfaceId: string, previewSize: image.Size): Promise<void> {
     console.info(`initCamera surfaceId: ${surfaceId} ${previewSize}`);
+    this.context = context
     this.imageWidth = previewSize.width
     this.imageHeight = previewSize.height
     try {
@@ -86,7 +90,7 @@ class CameraService {
         return;
       }
 
-      setPhotoOutputCb(this.photoOutput);
+      setPhotoOutputCb2(this.photoOutput, this);
       // 创建相机会话，启动会话
       this.session = getSession(this.cameraManager)
       beginConfig(this.session!)
@@ -196,6 +200,32 @@ class CameraService {
         })
       })
     })
+  }
+
+  async handlePhoto(buffer: ArrayBuffer): Promise<void> {
+    //throw new Error('Method not implemented.');
+    hilog.info(0x0000, CameraService.TAG, 'handlePhoto')
+
+    console.info('createAssetDemo');
+    let phAccessHelper = photoAccessHelper.getPhotoAccessHelper(this.context);
+    let photoType: photoAccessHelper.PhotoType = photoAccessHelper.PhotoType.IMAGE;
+    let extension: string = 'png';
+    let options: photoAccessHelper.CreateOptions = {
+      title: 'testPhoto'
+    }
+    let uri = await phAccessHelper.createAsset(photoType, extension, options);
+    // 使用uri打开文件，可以持续写入内容，写入过程不受时间限制
+    let file = await fs.open(uri, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
+    try {
+
+      // 写到媒体库文件中
+      await fs.write(file.fd, buffer);
+      await fs.close(file.fd);
+      AlertDialog.show({ message: '已保存至相册!' });
+
+    } catch (err) {
+      console.error("error is " + JSON.stringify(err))
+    }
   }
 }
 
@@ -798,6 +828,36 @@ function setPhotoOutputCb(photoOutput: camera.PhotoOutput): void {
       // 如需要在图库中看到所保存的图片、视频资源，请使用用户无感的安全控件创建媒体资源。
 
       // buffer处理结束后需要释放该资源，如果未正确释放资源会导致后续拍照获取不到buffer
+      imageObj.release();
+    });
+  });
+}
+
+
+function setPhotoOutputCb2(photoOutput: camera.PhotoOutput, cameraService: CameraService): void {
+  photoOutput.on('photoAvailable', (errCode: BusinessError, photo: camera.Photo): void => {
+    console.info('setPhotoOutputCb2 getPhoto start');
+    console.info(`err: ${JSON.stringify(errCode)}`);
+    if (errCode || photo === undefined) {
+      console.error('getPhoto failed');
+      return;
+    }
+    let imageObj = photo.main;
+    imageObj.getComponent(image.ComponentType.JPEG, (errCode: BusinessError, component: image.Component): void => {
+      console.info('getComponent start');
+      if (errCode || component === undefined) {
+        console.error('getComponent failed');
+        return;
+      }
+
+      if (component.byteBuffer) {
+        let buffer: ArrayBuffer;
+        buffer = component.byteBuffer;
+        cameraService.handlePhoto(buffer)
+      } else {
+        console.error('byteBuffer is null');
+        return;
+      }
       imageObj.release();
     });
   });
