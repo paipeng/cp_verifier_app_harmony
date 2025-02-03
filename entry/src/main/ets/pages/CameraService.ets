@@ -123,6 +123,9 @@ class CameraService {
     console.info('releaseCamera success');
   }
 
+  capturePhoto(captureLocation: camera.Location, ) {
+    capture(captureLocation, this.photoOutput!)
+  }
   async initImageReceiver(): Promise<void> {
     if (!this.imageReceiver) {
       // 创建ImageReceiver

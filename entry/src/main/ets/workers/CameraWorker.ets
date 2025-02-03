@@ -1,6 +1,8 @@
 import { ErrorEvent, MessageEvents, ThreadWorkerGlobalScope, worker } from '@kit.ArkTS';
 import CameraService from '../pages/CameraService';
 import { image } from '@kit.ImageKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { camera } from '@kit.CameraKit';
 
 const workerPort: ThreadWorkerGlobalScope = worker.workerPort;
 
@@ -12,6 +14,7 @@ interface MessageInfo {
   context: Context; // 注意worker线程中无法使用getContext()直接获取宿主线程context，需要通过消息从宿主线程通信到worker线程使用。
   surfaceId: string;
   previewSize: image.Size;
+  location: camera.Location;
 }
 
 /**
@@ -33,6 +36,9 @@ workerPort.onmessage = async (e: MessageEvents) => {
     console.info('worker releaseCamera.');
     // 在worker线程中释放相机
     await CameraService.releaseCamera();
+  } else if ('capturePhoto' == messageInfo.type) {
+    hilog.info(0x0000, 'CameraWorker', 'capturePhoto')
+    await CameraService.capturePhoto(messageInfo.location)
   }
 }
 
