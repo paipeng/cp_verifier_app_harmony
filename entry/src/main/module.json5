@@ -52,7 +52,7 @@
         "reason": "$string:camera_permission",
         "usedScene": {
           "abilities": [
-            "FormAbility"
+            "EntryAbility"
           ],
           "when":"inuse"
         }
@@ -62,7 +62,17 @@
         "reason": "$string:location_permission",
         "usedScene": {
           "abilities": [
-            "FormAbility"
+            "EntryAbility"
+          ],
+          "when":"always"
+        }
+      },
+      {
+        "name" : "ohos.permission.WRITE_IMAGEVIDEO",
+        "reason": "$string:location_permission",
+        "usedScene": {
+          "abilities": [
+            "EntryAbility"
           ],
           "when":"always"
         }
