@@ -54,7 +54,7 @@ export struct CameraPage {
   }
 
   build() {
-    Column() {
+    RelativeContainer() {
       Column() {
         XComponent({
           id: 'componentId',
@@ -94,10 +94,32 @@ export struct CameraPage {
       }.justifyContent(FlexAlign.Center)
       .height('100%')
 
-      Text('WorkerDemo')
-        .fontSize(36)
+      Image($r('app.media.productchain_icon_inv'))
+        .width(100)
+        .padding({
+          bottom: 20
+        })
+        .alignRules({
+          bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+          middle: { anchor: '__container__', align: HorizontalAlign.Center }
+        })
+        .onClick((event) => {
+          hilog.info(0x0000, this.TAG, 'capture: ' + event);
+
+          if (!this.workerInstance) {
+            console.error('create stage worker failed');
+            return;
+          }
+          // 宿主线程向worker线程发送初始化相机消息
+          this.workerInstance.postMessage({
+            type: 'capturePhoto',
+            context: getContext(this), // 将宿主线程的context传给worker线程使用
+            surfaceId: this.surfaceId,
+            location: this.location
+          })
+        })
     }
-    .justifyContent(FlexAlign.End)
+    //.justifyContent(FlexAlign.End)
     .height('100%')
     .width('100%')
     .backgroundColor(0xFF00FF)
