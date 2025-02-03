@@ -2,8 +2,11 @@ import { camera } from '@kit.CameraKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 import { image } from '@kit.ImageKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 class CameraService {
+  private static TAG: string = CameraService.name
+
   private imageWidth: number = 1920;
   private imageHeight: number = 1080;
   private cameraManager: camera.CameraManager | undefined = undefined;
@@ -29,24 +32,27 @@ class CameraService {
         console.error('cameraManager is undefined');
         return;
       }
-      this.cameras = this.cameraManager.getSupportedCameras();
-      for (const cam of this.cameras) {
-        // 0: back camera
-        // 1: front camera
-        console.debug('cameraId: ' + cam.cameraId + ' position: ' + cam.cameraPosition.valueOf() + ' type: ' + cam.cameraType.valueOf() + ' orientation: ' + cam.cameraOrientation + ' connectionType: ' + cam.connectionType.valueOf())
-      }
 
       // listen status
       onCameraStatusChange(this.cameraManager)
 
+      // 0: back camera
+      // 1: front camera
+      this.cameras = getCameraDevices(this.cameraManager)
+
+
       // 创建cameraInput输出对象
-      this.cameraInput = this.cameraManager.createCameraInput(this.cameras[0]);
+      this.cameraInput = createInput(this.cameras[0], this.cameraManager)
+      /*
+      this.cameraInput = this.cameraManager.createCameraInput(this.cameras[0])
       if (this.cameraInput === undefined) {
         console.error('Failed to create the camera input.');
         return;
       }
+      */
+
       // 打开相机
-      await this.cameraInput.open();
+      await this.cameraInput!.open();
 
       let previewProfile: camera.Profile = {
         format: camera.CameraFormat.CAMERA_FORMAT_YUV_420_SP,
@@ -62,6 +68,10 @@ class CameraService {
         return;
       }
 
+      onPreviewOutputFrameStart(this.previewOutput)
+      onPreviewOutputFrameEnd(this.previewOutput)
+      onPreviewOutputError(this.previewOutput)
+
       let photoProfile: camera.Profile = {
         format: camera.CameraFormat.CAMERA_FORMAT_JPEG,
         size: {
@@ -70,7 +80,7 @@ class CameraService {
         }
       };
       // 创建拍照流输出
-      this.photoOutput = this.cameraManager.createPhotoOutput(photoProfile);
+      this.photoOutput = getPhotoOutput2(this.cameraManager, photoProfile)//this.cameraManager.createPhotoOutput(photoProfile);
       if (this.photoOutput === undefined) {
         console.error('Failed to create the photoOutput.');
         return;
@@ -234,8 +244,7 @@ function onCameraStatusChange(cameraManager: camera.CameraManager): void {
   });
 }
 
-async function createInput(cameraDevice: camera.CameraDevice,
-  cameraManager: camera.CameraManager): Promise<camera.CameraInput | undefined> {
+function createInput(cameraDevice: camera.CameraDevice, cameraManager: camera.CameraManager): camera.CameraInput | undefined {
   // 创建相机输入流
   let cameraInput: camera.CameraInput | undefined = undefined;
   try {
@@ -251,8 +260,6 @@ async function createInput(cameraDevice: camera.CameraDevice,
   cameraInput.on('error', cameraDevice, (error: BusinessError) => {
     console.error(`Camera input error code: ${error.code}`);
   });
-  // 打开相机
-  await cameraInput.open();
   return cameraInput;
 }
 
@@ -736,6 +743,19 @@ function getPhotoOutput(cameraManager: camera.CameraManager, cameraOutputCapabil
   let photoOutput: camera.PhotoOutput | undefined = undefined;
   try {
     photoOutput = cameraManager.createPhotoOutput(photoProfilesArray[0]);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to createPhotoOutput. error: ${JSON.stringify(err)}`);
+  }
+  return photoOutput;
+}
+
+
+function getPhotoOutput2(cameraManager: camera.CameraManager, photoProfile: camera.Profile): camera.PhotoOutput | undefined {
+
+  let photoOutput: camera.PhotoOutput | undefined = undefined;
+  try {
+    photoOutput = cameraManager.createPhotoOutput(photoProfile);
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to createPhotoOutput. error: ${JSON.stringify(err)}`);
