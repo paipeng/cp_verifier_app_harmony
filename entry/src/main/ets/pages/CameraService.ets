@@ -86,6 +86,7 @@ class CameraService {
         return;
       }
 
+      setPhotoOutputCb(this.photoOutput);
       // 创建相机会话，启动会话
       this.session = getSession(this.cameraManager)
       beginConfig(this.session!)
@@ -308,7 +309,7 @@ async function getSupportedOutputCapability(cameraDevice: camera.CameraDevice, c
 }
 
 function getSession(cameraManager: camera.CameraManager): camera.PhotoSession | camera.VideoSession | undefined {
-  let session: camera.Session | undefined = undefined;
+  let session: camera.PhotoSession | camera.VideoSession | undefined = undefined;
   try {
     session = cameraManager.createSession(camera.SceneMode.NORMAL_PHOTO) as camera.PhotoSession;
   } catch (error) {
@@ -786,8 +787,8 @@ function setPhotoOutputCb(photoOutput: camera.PhotoOutput): void {
       }
 
       if (component.byteBuffer) {
-        //let buffer: ArrayBuffer;
-        //buffer = component.byteBuffer;
+        let buffer: ArrayBuffer;
+        buffer = component.byteBuffer;
       } else {
         console.error('byteBuffer is null');
 
