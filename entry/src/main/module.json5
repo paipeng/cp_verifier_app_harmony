@@ -66,16 +66,6 @@
           ],
           "when":"always"
         }
-      },
-      {
-        "name" : "ohos.permission.WRITE_IMAGEVIDEO",
-        "reason": "$string:location_permission",
-        "usedScene": {
-          "abilities": [
-            "EntryAbility"
-          ],
-          "when":"always"
-        }
       }
     ]
   }

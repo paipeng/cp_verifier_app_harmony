@@ -5,7 +5,7 @@ import { abilityAccessCtrl, common, Permissions } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
 
-const permissions: Array<Permissions> = ['ohos.permission.WRITE_IMAGEVIDEO', 'ohos.permission.CAMERA','ohos.permission.MEDIA_LOCATION'];
+const permissions: Array<Permissions> = ['ohos.permission.WRITE_MEDIA', 'ohos.permission.CAMERA','ohos.permission.MEDIA_LOCATION'];
 // 使用UIExtensionAbility：将common.UIAbilityContext 替换为common.UIExtensionContext
 function reqPermissionsFromUser(permissions: Array<Permissions>, context: common.UIAbilityContext): void {
   let atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
