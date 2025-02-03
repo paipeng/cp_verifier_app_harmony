@@ -87,13 +87,15 @@ class CameraService {
       }
 
       // 创建相机会话，启动会话
-      this.session = this.cameraManager.createSession(camera.SceneMode.NORMAL_PHOTO) as camera.PhotoSession;
-      this.session.beginConfig();
-      this.session.addInput(this.cameraInput);
-      this.session.addOutput(this.previewOutput);
-      this.session.addOutput(this.photoOutput);
-      await this.session.commitConfig();
-      await this.session.start();
+      this.session = getSession(this.cameraManager)
+      beginConfig(this.session!)
+      //this.session = this.cameraManager.createSession(camera.SceneMode.NORMAL_PHOTO) as camera.PhotoSession;
+      //this.session.beginConfig();
+      this.session!.addInput(this.cameraInput);
+      this.session!.addOutput(this.previewOutput);
+      this.session!.addOutput(this.photoOutput);
+      await this.session!.commitConfig();
+      await this.session!.start();
 
       this.initImageReceiver()
     } catch (error) {
@@ -305,7 +307,7 @@ async function getSupportedOutputCapability(cameraDevice: camera.CameraDevice, c
   return cameraOutputCapability;
 }
 
-function getSession(cameraManager: camera.CameraManager): camera.Session | undefined {
+function getSession(cameraManager: camera.CameraManager): camera.PhotoSession | camera.VideoSession | undefined {
   let session: camera.Session | undefined = undefined;
   try {
     session = cameraManager.createSession(camera.SceneMode.NORMAL_PHOTO) as camera.PhotoSession;
