@@ -4,6 +4,7 @@ import hilog from '@ohos.hilog';
 import { abilityAccessCtrl, bundleManager, Permissions } from '@kit.AbilityKit';
 import { worker } from '@kit.ArkTS';
 import { display } from '@kit.ArkUI';
+import { geoLocationManager } from '@kit.LocationKit';
 
 
 @Entry
@@ -15,12 +16,43 @@ export struct CameraPage {
   private displayClass: display.Display | undefined
   @State imageWidth: number = 1920;//3840;
   @State imageHeight: number = 1080;//2160;
+  private location: camera.Location | undefined
   // 创建ThreadWorker对象获取worker实例
   private workerInstance: worker.ThreadWorker = new worker.ThreadWorker('entry/ets/workers/CameraWorker.ets');
 
   onPageShow(): void {
     hilog.info(0x0000, this.TAG, 'onPageShow');
     this.checkPermissions()
+
+    try {
+      let locationEnabled = geoLocationManager.isLocationEnabled();
+      hilog.info(0x0000, this.TAG, 'locationEnabled = ' + locationEnabled)
+
+      let requestInfo:geoLocationManager.CurrentLocationRequest = {
+        'priority': geoLocationManager.LocationRequestPriority.ACCURACY,
+        'scenario': geoLocationManager.LocationRequestScenario.DAILY_LIFE_SERVICE,
+        'maxAccuracy': 0
+      }
+
+      try {
+        let location = geoLocationManager.getLastLocation()
+        hilog.info(0x0000, this.TAG, 'location: ' + location.latitude + ' ' + location.longitude + ' ' + location.altitude)
+
+        geoLocationManager.getCurrentLocation(requestInfo).then((location) => {
+          hilog.info(0x0000, this.TAG, 'location: ' + location.latitude + ' ' + location.longitude + ' ' + location.altitude)
+          this.location = {
+            latitude: this.location?.latitude!,
+            longitude: this.location?.longitude!,
+            altitude: this.location?.altitude!
+          }
+        })
+      } catch(err) {
+        hilog.error(0x0000, this.TAG, 'getCurrentLocation errCode = ' + err.code + ",errMessage:" + err.message)
+      }
+    } catch (err) {
+      hilog.error(0x0000, this.TAG, 'errCode = ' + err.code + ",errMessage:" + err.message)
+    }
+
     if ('' !== this.surfaceId) {
       // 通过worker实例向worker线程发送消息初始化相机
       this.workerInstance.postMessage({
